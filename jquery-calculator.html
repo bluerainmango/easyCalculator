@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jQuery Calculator</title>
+
+    <!-- Added link to the jQuery Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Added a link to Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+    <!-- Added a link to our external stylesheet-->
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+<!-- Jumbotron for Title -->
+<div class="jumbotron">
+    <h1 class="text-center">jQuery Calculator</h1>
+    <h3 class="text-center">Perform basic mathematic operations using the power of jQuery!</h3>
+</div>
+
+<div class="container">
+
+    <div class="row">
+
+      <!-- Calculator Card -->
+      <div class="col-lg-4">
+        <div class="card">
+          <h3 class="card-header">Calculator</h3>
+
+          <div class="card-body">
+            <button id="button-1" class="btn btn-primary number" value="1"><span>1</span></button>
+            <button id="button-2" class="btn btn-primary number" value="2"><span>2</span></button>
+            <button id="button-3" class="btn btn-primary number" value="3"><span>3</span></button>
+            <button id="button-plus" class="btn btn-danger operator" value="plus"><span>+</span></button>
+            <br><br>
+            <button id="button-4" class="btn btn-primary number" value="4"><span>4</span></button>
+            <button id="button-5" class="btn btn-primary number" value="5"><span>5</span></button>
+            <button id="button-6" class="btn btn-primary number" value="6"><span>6</span></button>
+            <button id="button-minus" class="btn btn-danger operator" value="minus"><span>&minus;</span></button>
+            <br><br>
+            <button id="button-7" class="btn btn-primary number" value="7"><span>7</span></button>
+            <button id="button-8" class="btn btn-primary number" value="8"><span>8</span></button>
+            <button id="button-9" class="btn btn-primary number" value="9"><span>9</span></button>
+            <button id="button-multiply" class="btn btn-danger operator" value="times"><span>&times;</span></button>
+            <br><br>
+            <button id="button-0" class="btn btn-primary number" value="0"><span>0</span></button>
+            <button id="button-divide" class="btn btn-danger operator" value="divide"><span>&divide;</span></button>
+            <button id="button-power" class="btn btn-danger operator" value="power"><span>^</span></button>
+            <button id="button-equal" class="btn btn-success equal" value="equals"><span>=</span></button>
+            <br><br>
+            <button id="button-clear" class="btn btn-dark clear" value="clear"><span>clear</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result Card -->
+      <div class="col-lg-6">
+        <div class="card">
+          <h3 class="card-header">Result</h3>
+          <div class="card-body">
+            <h1 id="first-number"></h1>
+            <h1 id="operator"></h1>
+            <h1 id="second-number"></h1>
+            <hr>
+            <h1 id="result"><span></span></h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+
+var state = {
+  'first-number-arr' : [],
+  'second-number-arr': [],
+  'firstNum': null,
+  'secondNum': null,
+  'operator': null, 
+  'result': null
+}
+
+// init : clear data & DOM
+function init(){
+  // Clear data
+  state['first-number-arr'] = [];
+  state['second-number-arr'] = [];
+  state.firstNum = 0;
+  state.secondNum = 0;
+  state.operator = null;
+  state.result = 0;
+
+  // Clear DOM
+  $('h1').not('.text-center').empty();
+
+}
+
+// Number btn event
+$('.btn-primary').click(function(){
+  
+  var inputNum = $(this).val();
+
+// Decide which data array we will save the input to. 
+  var insertTo = (!state.firstNum) ? 'first-number' : 'second-number';
+  
+  // 1. save input to state data
+  state[`${insertTo}-arr`].push(inputNum);
+
+  // 2. render input to DOM
+  $(`#${insertTo}`).append(inputNum);
+
+});
+
+// Operator btn event
+$('.btn-danger').click(function(e){
+  
+  // 1. convert operator to render( 'plus' => '+' )
+  var convertOperator = { plus: '+', minus: '-', times: '*', divide: '÷', power: '^', equals: '=' };
+  var operator = convertOperator[ $(this).val() ]; 
+  
+  // 2. save data
+  state.operator = operator;
+
+  // 3. Render
+  $('#operator').text(operator)
+
+  // 4. convert array to number and save it to data(first number) 
+  state.firstNum = Number(state['first-number-arr'].join(""));
+  
+});
+
+// Equal btn event
+$('#button-equal').click(function(){
+
+    // 1. convert array to number and save it to data(second number)
+    state.secondNum = Number(state['second-number-arr'].join(""));
+
+    console.log('total', state.firstNum, state.operator, state.secondNum);
+
+    // 2. calculate first number and second number
+    var cal = {
+                '+' : (a,b)=> a+b,
+                '-' : (a,b)=> a-b,
+                '*' : (a,b)=> a*b,
+                '÷' : (a,b)=> a/b,
+                '^' : (a,b)=> Math.pow(a,b),
+              }
+    
+    state.result = cal[state.operator](state.firstNum, state.secondNum);
+
+    // 3. render
+    $('#result').text(state.result);
+  })
+
+// Clear btn event
+$('#button-clear').click(init);
+
+init();
+
+});
+</script>
+
+</body>
+</html>
